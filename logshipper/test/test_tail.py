@@ -51,7 +51,9 @@ class Tail(unittest.TestCase):
             tail.stop()
             eventlet.sleep(0.01)  # give thread a chance to close the line
 
-        self.assertEqual(messages, [{"message": "second line"}])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(messages[0]["file_path"], f.name)
+        self.assertEqual(messages[0]["message"], "second line")
 
     def test_wildcard(self):
         messages = []
@@ -72,15 +74,19 @@ class Tail(unittest.TestCase):
                 f.write("line 1\n")
 
             eventlet.sleep(0.01)  # give thread a chance to read the line
-            self.assertEqual(messages, [{"message": "line 1"}])
+            self.assertEqual(len(messages), 1)
+            self.assertEqual(messages[0]["message"], "line 1")
 
             LOG.debug("about to write line 2")
             with open(path + "/test.log", 'a') as f:
                 f.write("line 2\n")
 
             eventlet.sleep(0.01)  # give thread a chance to read the line
-            self.assertEqual(messages, [{"message": "line 1"},
-                                        {"message": "line 2"}])
+            self.assertEqual(len(messages), 2)
+            self.assertEqual(messages[0]["file_path"], path + "/test.log")
+            self.assertEqual(messages[0]["message"], "line 1")
+            self.assertEqual(messages[1]["file_path"], path + "/test.log")
+            self.assertEqual(messages[1]["message"], "line 2")
 
             tail.stop()
             eventlet.sleep(0.1)  # give thread a chance to close the line

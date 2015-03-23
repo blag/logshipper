@@ -121,7 +121,8 @@ class Tail(logshipper.input.BaseInput):
                 lines = lines[:-1]
 
             for line in lines:
-                self.handler(file_path=tail.path, line=line[:-1])
+                message = {'file_path': tail.path, 'message': line[:-1]}
+                self.handler(message)
 
     def process_tail(self, path, should_seek=False):
         file_stat = os.stat(path)
@@ -197,4 +198,5 @@ class Tail(logshipper.input.BaseInput):
         os.close(tail.file_descriptor)
         if tail.buffer:
             LOG.debug("Generating message from tail buffer")
-            self.handler({'message': tail.buffer})
+            message = {'file_path': tail.path, 'message': tail.buffer}
+            self.handler(message)
