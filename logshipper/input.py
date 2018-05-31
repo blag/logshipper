@@ -266,7 +266,11 @@ class Syslog(BaseInput):
         fileobj = sock.makefile('r')
 
         for line in fileobj:
-            self.process_message(line.decode('utf8'), address[0])
+            try:
+                _line = line.decode('utf8')
+            except Exception:  # Python 3
+                _line = str(line)
+            self.process_message(_line, address[0])
 
         LOG.info("%r closed connection to syslog", address[0])
 
