@@ -1,0 +1,5 @@
+
+[run]
+concurrency = eventlet
+include = logshipper/tail.py
+          logshipper/test/test_tail.py
